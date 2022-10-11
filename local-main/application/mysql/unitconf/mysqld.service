@@ -1,0 +1,35 @@
+## /etc/systemd/system/mysqld.service
+
+[Unit]
+Description=MySQL Server
+Documentation=man:mysqld(8)
+Documentation=http://dev.mysql.com/doc/refman/en/using-systemd.html
+After=network.target
+After=syslog.target
+
+[Service]
+# tell how service uses the process (fork type comes with pid file)
+Type=forking
+PIDFile=/run/mysqld/mysqld.pid
+
+# manage the service exec and lifecycle
+ExecStartPre=/usr/bin/mysqld_pre_systemd
+ExecStart=/usr/sbin/mysqld --daemonize --pid-file=/run/mysqld/mysqld.pid $MYSQLD_OPTS
+ExecReload=/usr/sbin/mysqld -g 'daemon on; master_process on;' -s reload
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=5
+KillMode=process
+PrivateTmp=true
+
+# namespace
+Slice=workload-prod-mysql.slice
+User=mysql
+Group=mysql
+
+# capabilities
+# AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

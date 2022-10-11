@@ -1,0 +1,6 @@
+## /etc/my.cnf.d/user.conf (root access only chmod 0600)
+
+[client]
+user=root
+password=User@123！
+

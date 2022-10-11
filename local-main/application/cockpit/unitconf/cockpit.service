@@ -1,0 +1,24 @@
+## /etc/systemd/system/cockpit.service
+
+[Unit]
+Description=Cockpit Web Service
+Documentation=man:cockpit-ws(8)
+Requires=cockpit.socket
+
+[Service]
+# manage the service exec and lifecycle
+ExecStartPre=/usr/sbin/remotectl certificate --ensure --user=root --group=cockpit-ws --selinux-type=etc_t
+ExecStart=/usr/libexec/cockpit-ws
+ExecStop=/bin/kill -s QUIT $MAINPID
+PermissionsStartOnly=true
+
+# namespace
+Slice=workload-prod-cockpit.slice
+User=cockpit-ws
+Group=cockpit-ws
+
+# capabilities
+# AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

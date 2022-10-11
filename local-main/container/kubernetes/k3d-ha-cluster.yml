@@ -1,0 +1,41 @@
+# create-cluster.yaml
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+metadata:
+  name: anresion-ha-local
+servers: 3
+agents: 3
+image: rancher/k3s:v1.22.9-rc5-k3s1
+volumes: # repeatable flags are represented as YAML lists
+  - volume: /Users/bobo/data:/data:rw # same as `--volume '/my/host/path:/path/in/node@server:0;agent:*'`
+    nodeFilters:
+      - server:*
+      - agent:*
+ports:
+  - port: 8080:80 # same as `--port '8080:80@loadbalancer'`
+    nodeFilters:
+      - loadbalancer
+options:
+  k3d: # k3d runtime settings
+    wait: true # wait for cluster to be usable before returining; same as `--wait` (default: true)
+    timeout: "600s" # wait timeout before aborting; same as `--timeout 60s`
+    disableLoadbalancer: false # same as `--no-lb`
+    disableImageVolume: false # same as `--no-image-volume`
+    disableRollback: false # same as `--no-Rollback`
+    loadbalancer:
+      configOverrides:
+        - settings.workerConnections=2048
+registries:
+    create:
+      name: gitlab-registry
+    config: |
+      mirrors:
+       "registry.gitlab.com":
+         endpoint: 
+           - registry.gitlab.com
+           
+      configs:
+       "registry.gitlab.com":
+          auth:
+            username: docker-registry-token
+            password: glpat-sD3n7jh5TbPC93wfhCSi

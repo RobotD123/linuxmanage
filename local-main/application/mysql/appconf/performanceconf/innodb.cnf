@@ -1,0 +1,48 @@
+## /etc/my.cnf.d/innodb.cnf
+[mysqld]
+#数据块的单位8k，默认是16k，16kCPU压力稍小，8k对select的吞吐量大
+#innodb_page_size的参数值也影响最大索引长度，8k比16k的最大索引长度小
+#innodb_page_size = 8192
+#一般设置物理存储的60% ~ 70%
+innodb_buffer_pool_size = 1G
+ 
+#5.7.6之后默认16M
+#innodb_log_buffer_size = 16777216
+#该参数针对unix、linux，window上直接注释该参数.默认值为NULL
+#O_DIRECT减少操作系统级别VFS的缓存和Innodb本身的buffer缓存之间的冲突
+innodb_flush_method = O_DIRECT
+ 
+#此格式支持压缩, 5.7.7之后为默认值
+innodb_file_format = Barracuda
+ 
+#CPU多核处理能力设置，假设CPU是2颗4核的，设置如下
+#读多，写少可以设成2:6的比例
+innodb_write_io_threads = 4
+innodb_read_io_threads = 4
+ 
+#提高刷新脏页数量和合并插入数量，改善磁盘I/O处理能力
+#默认值200（单位：页）
+#可根据磁盘近期的IOPS确定该值
+innodb_io_capacity = 500
+ 
+#为了获取被锁定的资源最大等待时间，默认50秒，超过该时间会报如下错误:
+# ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+innodb_lock_wait_timeout = 30
+ 
+#调整buffer pool中最近使用的页读取并dump的百分比,通过设置该参数可以减少转储的page数
+innodb_buffer_pool_dump_pct = 40
+
+#5.7.7默认开启该参数 控制单列索引长度最大达到3072
+#innodb_large_prefix = 1
+ 
+#5.7.8默认为4个, Inodb后台清理工作的线程数
+#innodb_purge_threads = 4
+ 
+#通过设置配置参数innodb_thread_concurrency来限制并发线程的数量，
+#一旦执行线程的数量达到这个限制，额外的线程在被放置到对队列中之前，会睡眠数微秒，
+#可以通过设定参数innodb_thread_sleep_delay来配置睡眠时间
+#该值默认为0,在官方doc上，对于innodb_thread_concurrency的使用，也给出了一些建议:
+#(1)如果一个工作负载中，并发用户线程的数量小于64，建议设置innodb_thread_concurrency=0；
+#(2)如果工作负载一直较为严重甚至偶尔达到顶峰，建议先设置innodb_thread_concurrency=128,
+###并通过不断的降低这个参数，96, 80, 64等等，直到发现能够提供最佳性能的线程数
+#innodb_thread_concurrency = 0

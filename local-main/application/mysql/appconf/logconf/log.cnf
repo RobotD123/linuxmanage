@@ -1,0 +1,56 @@
+## /etc/my.cnf.d/log.cnf
+
+[mysqld]
+############ error log ##################
+log_error=/var/log/mysql/error.log
+
+############ slow query log ##################
+slow_query_log = true
+slow-query-log-file= /var/log/mysql/slow.log
+long_query_time = 10
+
+############ general log ##################
+general_log_file = /var/log/mysql/mysql.log
+general_log = true
+
+############ bin log ##################
+
+#binlog日志的基本文件名
+log_bin= /var/log/mysql/binlog/mysql-bin
+#binlog文件的索引文件，管理所有binlog文件
+log_bin_index=/var/log/mysql/binlog/mysql-bin.index
+#设置日志三种格式：STATEMENT、ROW、MIXED 
+binlog_format = 'STATEMENT'
+#设置binlog清理时间
+expire_logs_days = 7
+#binlog每个日志文件大小
+max_binlog_size = 100m
+#binlog缓存大小
+binlog_cache_size = 4m
+#最大binlog缓存大小
+max_binlog_cache_size = 512m
+
+############ undo redo log ##################
+
+#设置redoLog文件所在目录, redoLog记录事务具体操作内容
+innodb_log_group_home_dir = /var/log/mysql/redolog/
+#设置undoLog文件所在目录, undoLog用于事务回滚操作
+innodb_undo_directory = /var/log/mysql/undolog/
+
+#在innodb_log_group_home_dir中的redoLog文件数, redoLog文件内容是循环覆盖写入。
+innodb_log_files_in_group = 3
+ 
+#MySql5.7官方建议尽量设置的大些，可以接近innodb_buffer_pool_size的大小
+#之前设置该值较大时可能导致mysql宕机恢复时间过长，现在恢复已经加快很多了
+#该值减少脏数据刷新到磁盘的频次
+#最大值innodb_log_file_size * innodb_log_files_in_group <= 512GB,单文件<=256GB
+innodb_log_file_size = 1024M
+ 
+#设置undoLog文件所占空间可以回收
+#5.7之前的MySql的undoLog文件一直增大无法回收
+innodb_undo_log_truncate = true
+innodb_undo_tablespaces = 0
+innodb_undo_logs = 128
+
+
+########### relay log #####################
