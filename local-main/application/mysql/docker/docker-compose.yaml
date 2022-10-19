@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+    # mysql的主镜像
+    mysql-master:
+        build:
+            context: ../
+            dockerfile: mysql-master.dockerfile
+        volumes:
+            - ./mysql/lib/master:/var/lib/mysql
+            - ./mysql/log/master:/var/log/mysql
+        working_dir: /var/lib/mysql
+        environment:
+            - DB_HOST=database
+            - REDIS_HOST=redis
+    mysql-slave:
+        build:
+            context: ../
+            dockerfile: mysql-slave.dockerfile
+        volumes:
+            - ./mysql/lib/master:/var/lib/mysql
+            - ./mysql/log/master:/var/log/mysql
+        working_dir: /var/lib/mysql
+        environment:
+            - DB_HOST=database
+            - REDIS_HOST=redis
+        

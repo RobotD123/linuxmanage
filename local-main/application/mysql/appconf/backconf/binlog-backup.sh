@@ -17,8 +17,6 @@ date_start=`date +'%Y%m%d-%H:%M:%S'`
 ## 每日flushlog产生新binlog文件
 /usr/bin/mysqladmin -uroot -pUser@123! flush-logs
 
-
-
 date_end=`date +'%Y%m%d-%H:%M:%S'`
 echo "starting binlog backup mysql ${db_name} at ${date_start}, ends at ${date_end} SUCC"  >> ${bak_log_file}
 
